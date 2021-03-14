@@ -30,6 +30,15 @@ func Logger(logger zerolog.Logger) func(*Server) {
 func NewServer(addr string, options ...func(*Server)) *Server {
 	mux := http.NewServeMux()
 	mux.Handle("/metrics", promhttp.Handler())
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(`<html>
+  <head><title>HTTP Stat Monitor</title></head>
+  <body>
+    <h1>HTTP Stat Monitor</h1>
+    <p><a href='/metrics'>Metrics</a></p>
+  </body>
+</html>`))
+	})
 
 	srv := &Server{
 		srv:    &http.Server{Addr: addr, Handler: mux},
