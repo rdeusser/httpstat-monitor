@@ -2,6 +2,7 @@ package httpstat
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/rs/zerolog"
@@ -9,10 +10,11 @@ import (
 )
 
 type Server struct {
-	srv    *http.Server
-	mux    *http.ServeMux
-	logger zerolog.Logger
-	urls   []string
+	srv     *http.Server
+	mux     *http.ServeMux
+	logger  zerolog.Logger
+	urls    []string
+	timeout time.Duration
 }
 
 func MonitorURL(url string) func(*Server) {
@@ -24,6 +26,12 @@ func MonitorURL(url string) func(*Server) {
 func Logger(logger zerolog.Logger) func(*Server) {
 	return func(srv *Server) {
 		srv.logger = logger
+	}
+}
+
+func Timeout(timeout time.Duration) func(*Server) {
+	return func(srv *Server) {
+		srv.timeout = timeout
 	}
 }
 
@@ -41,10 +49,11 @@ func NewServer(addr string, options ...func(*Server)) *Server {
 	})
 
 	srv := &Server{
-		srv:    &http.Server{Addr: addr, Handler: mux},
-		mux:    mux,
-		logger: log.Logger,
-		urls:   make([]string, 0, 0),
+		srv:     &http.Server{Addr: addr, Handler: mux},
+		mux:     mux,
+		logger:  log.Logger,
+		urls:    make([]string, 0, 0),
+		timeout: 5 * time.Second,
 	}
 
 	for _, option := range options {
