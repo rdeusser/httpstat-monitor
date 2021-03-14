@@ -50,5 +50,5 @@ func (srv *Server) Start() error {
 		Str("addr", srv.srv.Addr).
 		Msg("Starting server")
 
-	return nil
+	return srv.srv.ListenAndServe()
 }
