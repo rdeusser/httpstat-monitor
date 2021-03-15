@@ -60,7 +60,7 @@ func NewServer(addr string, options ...func(*Server)) *Server {
 		srv:      &http.Server{Addr: addr, Handler: mux},
 		mux:      mux,
 		logger:   log.Logger,
-		urls:     make([]string, 0, 0),
+		urls:     make([]string, 0),
 		interval: 15 * time.Second,
 	}
 
@@ -95,7 +95,6 @@ func (srv *Server) scrapeURL(url string) {
 				Str("url", url).
 				Msg("Failed to scrape URL")
 		}
-		defer resp.Body.Close()
 
 		duration := time.Since(start).Milliseconds()
 		urlResponseMS.WithLabelValues(url).Observe(float64(duration))
@@ -105,6 +104,8 @@ func (srv *Server) scrapeURL(url string) {
 		} else {
 			urlUp.WithLabelValues(url).Set(0)
 		}
+
+		resp.Body.Close()
 
 		time.Sleep(srv.interval)
 	}
