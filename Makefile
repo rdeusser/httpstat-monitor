@@ -36,7 +36,7 @@ endef
 
 .PHONY: help
 help: ## Display this help text.
-	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n\nAvailable targets:\n"} /^[\/0-9a-zA-Z_-]+:.*?##/ { printf "  \x1b[32;01m%-20s\x1b[0m %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
+	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n\nAvailable targets:\n"} /^[\/0-9a-zA-Z_-]+:.*?##/ { printf "  \x1b[32;01m%-23s\x1b[0m %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
 
 .PHONY: fmt
 fmt: $(GOIMPORTS) ## Formats Go code including imports and cleans up noise.
@@ -80,7 +80,19 @@ docker-build: ## Build docker image.
 
 .PHONY: deploy
 deploy: docker-build ## Builds and deploys httpstat-monitor.
-	@kubectl apply -f deploy/
+	@echo ">> deploying helm chart"
+	@helm upgrade --install httpstat-monitor ./chart/httpstat-monitor --set image.tag=$(VERSION)
+	@kubectl -n default delete pod -l app.kubernetes.io/name=httpstat-monitor
+
+.PHONY: deploy-prometheus
+deploy-prometheus: ## Deploys the kube-prometheus helm chart.
+	@echo ">> deploying kube-prometheus helm chart"
+	@helm install kube-prometheus prometheus-community/kube-prometheus-stack --version 14.0.1
+
+.PHONY: port-forward-prometheus
+port-forward-prometheus: ## Port forwards the Prometheus UI to localhost:9090/.
+	@echo ">> port forwarding Prometheus UI"
+	@kubectl -n default port-forward --address localhost service/kube-prometheus-kube-prome-prometheus 9090:9090
 
 .PHONY: bump-version
 bump-version: ## Bump the version in the version file. Set SEMVER to [ patch (default) | major | minor ].
