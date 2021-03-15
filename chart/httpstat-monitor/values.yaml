@@ -1,0 +1,10 @@
+replicaCount: 1
+
+image:
+  repository: rdeusser/httpstat-monitor
+  pullPolicy: IfNotPresent
+  tag: ""
+
+service:
+  type: ClusterIP
+  port: 80
