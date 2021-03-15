@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -85,7 +86,8 @@ func (srv *Server) Start() error {
 
 func (srv *Server) scrapeURL(url string) {
 	for {
-		start := time.Now()
+		timer := prometheus.NewTimer(urlResponseMS.WithLabelValues(url))
+
 		resp, err := srv.client.Get(url)
 		if err != nil {
 			urlUp.WithLabelValues(url).Set(0)
@@ -96,8 +98,7 @@ func (srv *Server) scrapeURL(url string) {
 				Msg("Failed to scrape URL")
 		}
 
-		duration := time.Since(start).Milliseconds()
-		urlResponseMS.WithLabelValues(url).Observe(float64(duration))
+		timer.ObserveDuration()
 
 		if resp.StatusCode >= 200 && resp.StatusCode < 300 {
 			urlUp.WithLabelValues(url).Set(1)
