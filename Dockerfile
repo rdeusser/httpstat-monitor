@@ -1,4 +1,4 @@
-FROM golang:1.15 as builder
+FROM golang:1.16 as builder
 
 WORKDIR /src/httpstat-monitor
 
@@ -14,4 +14,4 @@ RUN make build
 FROM gcr.io/distroless/static:nonroot
 
 COPY --from=builder /src/httpstat-monitor/bin/httpstat-monitor /
-ENTRYPOINT ["/httpstat-monitor"]
+ENTRYPOINT ["/httpstat-monitor", "server"]
