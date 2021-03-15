@@ -2,6 +2,7 @@ package app
 
 import (
 	"github.com/rdeusser/cli"
+	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
 	"github.com/rdeusser/httpstat-monitor/pkg/httpstat"
@@ -20,6 +21,10 @@ func (ServerCommand) Init() cli.Command {
 }
 
 func (ServerCommand) Run(args []string) error {
+	if Debug.Get() {
+		zerolog.SetGlobalLevel(zerolog.DebugLevel)
+	}
+
 	srv := httpstat.NewServer(":8080",
 		httpstat.Logger(log.Logger),
 		httpstat.MonitorURL("https://httpstat.us/503"),

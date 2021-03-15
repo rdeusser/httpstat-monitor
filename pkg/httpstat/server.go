@@ -85,6 +85,10 @@ func (srv *Server) Start() error {
 }
 
 func (srv *Server) scrapeURL(url string) {
+	srv.logger.Debug().
+		Str("url", url).
+		Msg("Scraping URL")
+
 	for {
 		timer := prometheus.NewTimer(urlResponseMS.WithLabelValues(url))
 
