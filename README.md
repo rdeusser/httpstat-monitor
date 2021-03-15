@@ -31,7 +31,7 @@ You can also do this with the Grafana UI by running `make port-forward-grafana` 
 
 The default credentials for Grafana are:
 
-User: `admin`
+User: `admin`\
 Password: `prom-operator`
 
 ## Screenshots
