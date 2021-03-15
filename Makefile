@@ -94,6 +94,11 @@ port-forward-prometheus: ## Port forwards the Prometheus UI to localhost:9090/.
 	@echo ">> port forwarding Prometheus UI"
 	@kubectl -n default port-forward --address localhost service/kube-prometheus-kube-prome-prometheus 9090:9090
 
+.PHONY: port-forward-grafana
+port-forward-grafana: ## Port forwards the Grafana UI to localhost:9090/.
+	@echo ">> port forwarding Grafana UI"
+	@kubectl -n default port-forward --address localhost service/kube-prometheus-grafana 8080:80
+
 .PHONY: bump-version
 bump-version: ## Bump the version in the version file. Set SEMVER to [ patch (default) | major | minor ].
 	@./scripts/bump-version.sh $(SEMVER)
