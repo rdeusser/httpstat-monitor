@@ -10,6 +10,8 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+// Server is the server component of httpstat-monitor that performs the actual
+// monitoring of URLs.
 type Server struct {
 	client   *http.Client
 	srv      *http.Server
@@ -19,30 +21,35 @@ type Server struct {
 	interval time.Duration
 }
 
+// MonitorURL adds a URL to the list of URLs to monitor.
 func MonitorURL(url string) func(*Server) {
 	return func(srv *Server) {
 		srv.urls = append(srv.urls, url)
 	}
 }
 
+// Logger sets the logger of the server.
 func Logger(logger zerolog.Logger) func(*Server) {
 	return func(srv *Server) {
 		srv.logger = logger
 	}
 }
 
+// Timeout sets the timeout of the HTTP client used to monitor URLs.
 func Timeout(timeout time.Duration) func(*Server) {
 	return func(srv *Server) {
 		srv.client.Timeout = timeout
 	}
 }
 
+// Interval sets the interval between calls to each URL.
 func Interval(interval time.Duration) func(*Server) {
 	return func(srv *Server) {
 		srv.interval = interval
 	}
 }
 
+// NewServer creates a new Server instance with which to monitor URLs.
 func NewServer(addr string, options ...func(*Server)) *Server {
 	mux := http.NewServeMux()
 	mux.Handle("/metrics", promhttp.Handler())
@@ -72,6 +79,7 @@ func NewServer(addr string, options ...func(*Server)) *Server {
 	return srv
 }
 
+// Starts starts the server.
 func (srv *Server) Start() error {
 	srv.logger.Info().
 		Str("addr", srv.srv.Addr).
