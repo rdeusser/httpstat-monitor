@@ -27,4 +27,15 @@ Operator, Prometheus, and Grafana (as well as a few other things).
 If your Kubernetes cluster is running on your local machine, run `make port-forward-prometheus` to have kubectl
 port-forward the Prometheus UI to your local machine and then navigate to `http://localhost:9090/graph` in your browser.
 
+You can also do this with the Grafana UI by running `make port-forward-grafana` and then navigate to `http://localhost:8080`.
+
+The default credentials for Grafana are:
+
+User: `admin`
+Password: `prom-operator`
+
+## Screenshots
+
 ![Screenshot of Prometheus](/docs/screenshots/prometheus.png?raw=true)
+
+![Screenshot of Grafana Dashboard](/docs/screenshots/grafana.png?raw=true)
