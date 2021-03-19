@@ -18,8 +18,9 @@ To build and run this project locally, you need the following things:
 
 To deploy everything:
 
-1. `make deploy`
+1. `helm repo add prometheus-community https://prometheus-community.github.io/helm-charts`
 2. `make deploy-prometheus`
+3. `make deploy`
 
 This will deploy httpstat-monitor and the [kube-prometheus stack](https://artifacthub.io/packages/helm/prometheus-community/kube-prometheus-stack) which includes the Prometheus
 Operator, Prometheus, and Grafana (as well as a few other things).
